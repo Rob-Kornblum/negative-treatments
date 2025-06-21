@@ -1,0 +1,17 @@
+Extract all negative treatments (such as overruled, criticized, questioned, or limited) of other cases from the following court opinion.
+For each, return a JSON object with the following keys: 'treated_case', 'treatment', 'treatment_text', and 'explanation'.
+For 'treatment_text', include the full, direct quote from the opinion (do not use ellipses or summaries).
+If none are found, return an empty JSON array [].
+
+Example:
+[
+  {
+    "treated_case": "Smith v. Jones, 123 U.S. 456",
+    "treatment": "Criticized",
+    "treatment_text": "The court in Smith v. Jones, 123 U.S. 456, was criticized for its reasoning on this point.",
+    "explanation": "The opinion explicitly criticizes the reasoning in Smith v. Jones."
+  }
+]
+
+Opinion:
+{opinion_text}
