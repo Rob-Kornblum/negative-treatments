@@ -2,6 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 from openai import OpenAI
 import json
+from jinja2 import Template
 
 def fetch_case_html(case_id: str) -> str:
     url = f"https://scholar.google.com/scholar_case?case={case_id}"
@@ -29,8 +30,9 @@ def extract_opinion_text(html: str) -> str:
 
 def load_prompt(opinion_text: str, prompt_path: str = "prompts/negative_treatment_v1.txt") -> str:
     with open(prompt_path, "r") as f:
-        template = f.read()
-    return template.replace("{opinion_text}", opinion_text)
+        template_str = f.read()
+    template = Template(template_str)
+    return template.render(opinion_text=opinion_text)
 
 def extract_negative_treatments(case_id: str, client: OpenAI):
     html = fetch_case_html(case_id)
