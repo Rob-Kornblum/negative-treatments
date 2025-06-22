@@ -1,0 +1,112 @@
+Extract all negative treatments (such as overruled, criticized, questioned, or limited) of other cases from the following court opinion.
+
+For each, return a JSON object with the following keys: 'treated_case', 'treatment', 'treatment_text', and 'explanation'.
+For 'treatment_text', include the full, direct quote from the opinion (do not use ellipses or summaries).
+If none are found, return an empty JSON array [].
+
+# INSTRUCTIONS
+
+1. Only include a case if the court explicitly overrules, criticizes, questions, or limits that specific case.
+2. Do not include a case if it is merely cited to support the court’s reasoning, or to support the overruling, criticism, questioning, or limitation of another case or doctrine.
+3. Do not include a case if the court is simply mentioning it, describing its facts, or using it as background or persuasive authority.
+4. If you are unsure whether a case is being negatively treated or merely cited as support, do not include it in the output.
+5. For each cited case, ask yourself:
+   - Is the court disagreeing with, limiting, criticizing, or overruling this case?
+   - Or is the court citing it as support for its own reasoning or for overruling another case?
+   - Only include the case if the answer is the former.
+6. If no cases are explicitly overruled, criticized, questioned, or limited, or if all cited cases are only used as support, return an empty array: []
+
+# LIMITATIONS AND EXAMPLES
+
+## Limitation #1: Requests Are not Negative Treatments
+
+- Do not include cases where a party merely requests that the court overrule, criticize, question, or limit a case, unless the court actually does so.
+
+Negative Example:
+"The State requests that we overrule our holding in Johnson..."
+Output:
+[]
+
+Positive Example:
+"We overrule Johnson v. State."
+Output:
+[
+  {
+    "treated_case": "Johnson v. State, 123 U.S. 456",
+    "treatment": "Overruled",
+    "treatment_text": "We overrule Johnson v. State.",
+    "explanation": "The opinion explicitly overrules Johnson v. State."
+  }
+]
+
+## Limitation #2: Supportive Citations Are not Negative Treatments
+
+- Do not include cases that are cited to support the court’s reasoning, or to support the overruling, criticism, questioning, or limitation of another case or doctrine.
+
+Negative Example:
+"In our view, the Doctrine is more likely to have the effect of disrupting family harmony rather than preserving it. Hack v. Hack, Pa.Supr., 495 Pa. 300, 433 A.2d 859, 866 (1981)."
+(Hack v. Hack is cited to support the court's reasoning, not criticized or limited.)
+
+Output:
+[]
+
+Positive Example:
+"We disagree with the reasoning in Smith v. Jones and therefore limit its application."
+Output:
+[
+  {
+    "treated_case": "Smith v. Jones, 123 U.S. 456",
+    "treatment": "Limited",
+    "treatment_text": "We disagree with the reasoning in Smith v. Jones and therefore limit its application.",
+    "explanation": "The opinion explicitly limits Smith v. Jones."
+  }
+]
+
+## Limitation #3: Partial Negative Treatments
+
+- If a case is only overruled, criticized, questioned, or limited in part (e.g., "to the extent it is inconsistent..."), classify the treatment as "Partially Overruled" (or "Partially Criticized", etc.) and explain which part is affected.
+
+Positive Example:
+"To the extent that State v. Trusty, 1 Pennewill 319, 40 A. 766 is inconsistent with this holding, we overrule it."
+Output:
+[
+  {
+    "treated_case": "State v. Trusty, 1 Pennewill 319, 40 A. 766",
+    "treatment": "Partially Overruled",
+    "treatment_text": "To the extent that State v. Trusty, 1 Pennewill 319, 40 A. 766 is inconsistent with this holding, we overrule it.",
+    "explanation": "The opinion overrules State v. Trusty only where it is inconsistent with the current holding, not in its entirety."
+  }
+]
+
+Negative Example:
+"We overrule Smith v. Jones in its entirety."
+Output:
+[
+  {
+    "treated_case": "Smith v. Jones, 123 U.S. 456",
+    "treatment": "Overruled",
+    "treatment_text": "We overrule Smith v. Jones in its entirety.",
+    "explanation": "The opinion completely overrules Smith v. Jones."
+  }
+]
+
+# GENERAL EXAMPLE
+
+Example:
+[
+  {
+    "treated_case": "Smith v. Jones, 123 U.S. 456",
+    "treatment": "Criticized",
+    "treatment_text": "The court in Smith v. Jones, 123 U.S. 456, was criticized for its reasoning on this point.",
+    "explanation": "The opinion explicitly criticizes the reasoning in Smith v. Jones."
+  }
+]
+
+# FINAL INSTRUCTIONS
+
+- Only include cases in the output that meet the above criteria.
+- Do not include cases that are merely cited as support, background, or persuasive authority.
+- If no cases are explicitly overruled, criticized, questioned, or limited, or if all cited cases are only used as support, return an empty array: []
+
+Opinion:
+{{opinion_text}}

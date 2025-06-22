@@ -1,0 +1,28 @@
+Extract all negative treatments (such as overruled, criticized, questioned, or limited) of other cases from the following court opinion.
+For each, return a JSON object with the following keys: 'treated_case', 'treatment', 'treatment_text', and 'explanation'.
+For 'treatment_text', include the full, direct quote from the opinion (do not use ellipses or summaries).
+If none are found, return an empty JSON array [].
+
+Limitations: 
+1. Ensure that cases classified as `negative treatments` do not merely state that a certain party has requested a case to be
+distinguished or overruled, but only include cases that are actually overruled, criticized, questioned, or limited.
+`The State requests that we overrule our holding...` is not necessarily a negative treatment
+unless the decision satisfies the state's request and expressly overrules it.
+
+Limitation #1 Negative Example:  `Nonetheless this court declines to overrule 
+the holding in ...`
+
+Limitation #1 Positive Example: `We agree with the state's conclusion...`
+
+Example:
+[
+  {
+    "treated_case": "Smith v. Jones, 123 U.S. 456",
+    "treatment": "Criticized",
+    "treatment_text": "The court in Smith v. Jones, 123 U.S. 456, was criticized for its reasoning on this point.",
+    "explanation": "The opinion explicitly criticizes the reasoning in Smith v. Jones."
+  }
+]
+
+Opinion:
+{{opinion_text}}
