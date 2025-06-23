@@ -2,7 +2,7 @@
 
 ## Overview
 
-This project extracts negative treatments from court opinions using OpenAI's language models. These are cases that are (overruled - wholly or partially, criticized, questioned, or limited). It includes prompt engineering, unit tests, and package management.
+This project extracts negative treatments from court opinions using OpenAI's language models. These are cases that are overruled - wholly or partially, criticized, questioned, or limited. It includes prompt engineering, unit tests, and package management.
 
 ---
 
