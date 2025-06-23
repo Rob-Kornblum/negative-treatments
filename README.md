@@ -2,7 +2,9 @@
 
 ## Overview
 
-This project extracts negative treatments from court opinions using OpenAI's language models. These are cases that are overruled - wholly or partially, criticized, questioned, or limited. It includes prompt engineering, unit tests, and package management.
+This project extracts negative treatments from court opinions on google scholar using OpenAI's gpt-4o-mini language model. These are cases that are overruled - wholly or partially, criticized, questioned, or limited.
+
+The `gpt-4o-mini` model was chosen for its balance of accuracy, speed, and cost-effectiveness. Here, we need it for targeted, reliable outputs with the same instructions across a range of input opinion text rather than general-purpose chat.
 
 ---
 
@@ -37,7 +39,7 @@ pip install -r requirements.txt
 
 Create a file named `.env` in the project root with the following content:
 
-```
+```txt
 OPENAI_API_KEY=sk-...
 ```
 
@@ -59,15 +61,26 @@ pytest
 
 You can test the extraction function interactively in a Python shell:
 
-```python
+```bash
+python
 from extract import extract_negative_treatments
 
-# Replace 'YOUR_CASE_ID' with a valid case ID for your data source
-treatment = extract_negative_treatments(id='YOUR_CASE_ID')
-print(treatment)
+# Replace 'CASE_ID' with a valid case ID from the google scholar database (e.g., https://scholar.google.com/scholar_case?case=<CASE_ID>)
+treatments = extract_negative_treatments(id='CASE_ID')
+print(treatments)
 ```
 
 - The function will return a list of dictionaries, each with the keys: `treated_case`, `treatment`, `treatment_text`, and `explanation`.
+
+```bash
+[{'treated_case': 'Plaintiff v. Defendant, Del.Supr., 123 A.2d 456 (1999)', 'treatment': 'Overruled', 'treatment_text': 'We hereby overrule Plaintiff.', 'explanation': 'The opinion explicitly overrules Plaintiff.'}]
+```
+
+- If no negative treatments are found, the function will return an empty list:
+
+```bash
+[]
+```
 
 ---
 
@@ -79,11 +92,40 @@ If you want to run the API server:
 uvicorn main:app --reload
 ```
 
+Navigate to http://localhost:8000/docs in your browser to use the FastAPI UI
+
+Click on `Get Negative Treatments` (the `/negative-treatments` endpoint) and click `Try it out`.
+
+Replace the word `string` with a valid case ID from the google scholar database.
+
+Example:
+
+```json
+{
+  "case_id": "123456789"
+}
+```
+
+Click `Execute` to send the request
+
+Example output:
+
+```json
+{
+  "negative_treatments": [
+    {
+      "treated_case": "Plaintiff v. Defendant, Del.Supr., 123 A.2d 456 (1999)",
+      "treatment": "Overruled",
+      "treatment_text": "We hereby overrule Plaintiff.",
+      "explanation": "The opinion explicitly overrules Plaintiff."
+    }
+  ]
+}
+```
+
 ---
 
-## Prompt Engineering
-
-### Prompting Approaches Attempted
+## Prompting Approaches Attempted
 
 **v1:**  
 The initial prompt just asked for negative treatments and provided a single example. This led to over-inclusion of cases in some instances because the model often returned any cited case, even if it was just mentioned or used as background, since there were no explicit instructions or negative examples.
@@ -104,8 +146,7 @@ v5 added the explicit instruction: **ignore negative treatments that appear only
 
 ## Package Management
 
-All dependencies are listed in `requirements.txt`.  
-If you prefer [Poetry](https://python-poetry.org/), you can convert the requirements file using Poetry’s import command.
+All dependencies are listed in `requirements.txt`.
 
 ---
 
@@ -113,3 +154,4 @@ If you prefer [Poetry](https://python-poetry.org/), you can convert the requirem
 
 - Make sure your `.env` file is present and contains a valid OpenAI API key.
 - Activate your virtual environment before running any commands.
+- Ensure your case_ids are wrapped in quotation marks (either `"` or `'` if running `extract_negative_treatments` via the python console or `"` if using the FastAPI UI).
