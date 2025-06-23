@@ -7,6 +7,7 @@ app = FastAPI()
 class CaseRequest(BaseModel):
     case_id: str
 
+# Used for local development and testing
 @app.post("/negative-treatments")
 def get_negative_treatments(request: CaseRequest):
     try:
